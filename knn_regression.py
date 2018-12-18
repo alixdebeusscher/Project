@@ -12,17 +12,17 @@ def normalize(X_train):
     scaler = MinMaxScaler()
 
     x_train_scaled = scaler.fit_transform(X_train)
-    x_train = pd.DataFrame(x_train_scaled)
+    #x_train = pd.DataFrame(x_train_scaled)
     
     
-    return x_train
+    return x_train_scaled
 
 def get_k(X_train,X_test,y_train,y_test,max_k):
     rmse_val = [] #to store rmse values for different k
     for K in range(1,max_k+1):
         model = neighbors.KNeighborsRegressor(n_neighbors = K)
-        model.fit(x_train, y_train)  #fit the model
-        pred=model.predict(x_test) #make prediction on test set
+        model.fit(X_train, y_train)  #fit the model
+        pred=model.predict(X_test) #make prediction on test set
         error = sqrt(mean_squared_error(y_test,pred)) #calculate rmse
         rmse_val.append(error) #store rmse values
         #print('RMSE value for k= ' , K , 'is:', error)
@@ -65,12 +65,7 @@ y = X1[col[-1]].values
 X_scaled = normalize(X)
 linear(X,y)
 linear(X_scaled,y)
-#split data
-#X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.3, shuffle=True)
 
-#normalize data
-x_train, x_test = normalize(X_train, X_test)
-rmse, k = get_k(X_train,X_test,y_train,y_test,30)
-print('Least rmse is:', rmse, 'with k:', k)
+
 
 
