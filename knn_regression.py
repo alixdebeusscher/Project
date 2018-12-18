@@ -14,18 +14,28 @@ from sklearn.svm import SVC
 from sklearn.datasets import load_digits
 from sklearn.model_selection import learning_curve
 from sklearn.model_selection import ShuffleSplit
+from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import cross_val_score
+import itertools as it
 
 def normalize(X_train):
     scaler = MinMaxScaler()
     x_train_scaled = scaler.fit_transform(X_train)
     #x_train = pd.DataFrame(x_train_scaled)
-<<<<<<< HEAD
-    
-    
-=======
- 
->>>>>>> 1d3b3a8dc6763eda8f7d4e1d32c68469e7eb2b59
     return x_train_scaled
+
+def linear(X,y):
+    regressor = LinearRegression()
+      
+    regressor.fit(X, y)  
+    print(regressor.coef_)
+    
+    width = 1/1.5
+    plt.figure(figsize=(10,3))
+    plt.bar(col[:-1], regressor.coef_, width, color="green")
+    plt.savefig('coef.png')
+    
+    plot_learning_curve(LinearRegression(), 'Test', X, y, cv=5)
 
 def get_k(X_train,X_test,y_train,y_test,max_k):
     rmse_val = [] #to store rmse values for different k
@@ -33,11 +43,8 @@ def get_k(X_train,X_test,y_train,y_test,max_k):
     for K in range(1,max_k+1):
         model = neighbors.KNeighborsRegressor(n_neighbors = K)
         model.fit(X_train, y_train)  #fit the model
-<<<<<<< HEAD
-=======
         predt=model.predict(X_train)
         errort=sqrt(mean_squared_error(y_train,predt))
->>>>>>> 1d3b3a8dc6763eda8f7d4e1d32c68469e7eb2b59
         pred=model.predict(X_test) #make prediction on test set
         error = sqrt(mean_squared_error(y_test,pred)) #calculate rmse
         rmse_val.append(error) #store rmse values
@@ -61,19 +68,6 @@ def get_k(X_train,X_test,y_train,y_test,max_k):
     p = rmse_val.index(min(rmse_val))+1
     return k,p
 
-def linear(X,y):
-    regressor = LinearRegression()
-      
-    regressor.fit(X, y)  
-    print(regressor.coef_)
-    
-    width = 1/1.5
-    plt.figure(figsize=(10,3))
-    plt.bar(col[:-1], regressor.coef_, width, color="green")
-    plt.savefig('coef.png')
-    
-    plot_learning_curve(LinearRegression(), 'Test', X, y, cv=5)
-
 #Read test file
 X1=pd.read_csv("X1_t1.csv")
 
@@ -83,14 +77,6 @@ col = list(X1)
 #Split test file in learning set and test set
 X = X1.drop(col[-1],axis=1).values
 y = X1[col[-1]].values
-
-<<<<<<< HEAD
-X_scaled = normalize(X)
-linear(X,y)
-linear(X_scaled,y)
-
-
-=======
 
 #linear(X,y)
 #X_scaled = normalize(X)
@@ -106,6 +92,27 @@ x_test = normalize(X_test)
 print(x_train[4])
 rmse, k = get_k(x_train,x_test,y_train,y_test,100)
 print('Least rmse is:', rmse, 'with k:', k)
->>>>>>> 1d3b3a8dc6763eda8f7d4e1d32c68469e7eb2b59
 
+def best_features_meta_parameter(X,y,estimator,param_grid):
+    size = X.shape
+    minscore = float('Inf')
+    bestpar = None
+    bestfeatures = None
+    for k in param_grid:
+        print(k)
+        model = estimator(n_neighbors=k)
+        for n_features in range(1,size[1]+1):
+            for features in it.combinations(list(range(size[1])), n_features):
+                subdata = X[:,features]
+                scores = cross_val_score(model,subdata,y, cv=10, scoring=score_function)
+                if scores.mean() < minscore:
+                    minscore = scores.mean()
+                    bestpar = k
+                    bestfeatures = features
+    return minscore,bestpar,bestfeatures
+
+#param_grid = {'n_neighbors':[2, 4, 6, 8, 10]}
+#model = GridSearchCV(neighbors.KNeighborsRegressor, param_grid, scoring='neg_mean_absolute_error', cv=10)
+#model.fit(X,y)
+best_features_meta_parameter(X,y,neighbors.KNeighborsRegressor,param_grid = range(1,21))
 

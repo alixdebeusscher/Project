@@ -1,6 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt 
-import numpy
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import MinMaxScaler
@@ -42,7 +42,7 @@ print('error is', error)
 
 def score_function(model, X, Y):
     'norm-2 criterion for optimization of models'
-    return numpy.sqrt(numpy.mean(((model.predict(X) - Y)) **2, axis=0)).sum()
+    return np.sqrt(np.mean(((model.predict(X) - Y)) **2, axis=0)).sum()
 
 # K-fold cross-validation score of a model
 def cross_validate(model, data, target, cv = 10, score=score_function, doprint=False):
@@ -104,10 +104,10 @@ def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
     plt.ylabel("Score")
     train_sizes, train_scores, test_scores = learning_curve(
         estimator, X, y, cv=cv, n_jobs=n_jobs, train_sizes=train_sizes, scoring=scoring)
-    train_scores_mean = numpy.mean(train_scores, axis=1)
-    train_scores_std = numpy.std(train_scores, axis=1)
-    test_scores_mean = numpy.mean(test_scores, axis=1)
-    test_scores_std = numpy.std(test_scores, axis=1)
+    train_scores_mean = np.mean(train_scores, axis=1)
+    train_scores_std = np.std(train_scores, axis=1)
+    test_scores_mean = np.mean(test_scores, axis=1)
+    test_scores_std = np.std(test_scores, axis=1)
     plt.grid()
 
     plt.fill_between(train_sizes, train_scores_mean - train_scores_std,
@@ -164,7 +164,7 @@ def select_features_and_hyperparams(model_generator, data, target, cv_cv=10, cv_
 
 def extend_data(model, data):
     'extends the data with prediction on a single target'
-    return numpy.column_stack((data, model.predict(data)))
+    return np.column_stack((data, model.predict(data)))
     # return numpy.concatenate((data, numpy.column_stack(model.predict(data)).T), axis=1)
 
 

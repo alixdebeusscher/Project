@@ -8,7 +8,7 @@ from sklearn.model_selection import ShuffleSplit
 
 def score_function(model, X, Y):
     'norm-2 criterion for optimization of models'
-    return np.sqrt(np.mean(((model.predict(X) - Y)) **2, axis=0)).sum()
+    return numpy.sqrt(numpy.mean(((model.predict(X) - Y)) **2, axis=0)).sum()
 
 def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
                         n_jobs=None, train_sizes=np.linspace(.1, 1.0, 20)):
