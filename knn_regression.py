@@ -1,3 +1,4 @@
+from tools import *
 import pandas as pd
 import matplotlib.pyplot as plt 
 from sklearn import neighbors
@@ -81,3 +82,5 @@ x_train, x_test = normalize(X_train, X_test)
 rmse, k = get_k(X_train,X_test,y_train,y_test,30)
 print('Least rmse is:', rmse, 'with k:', k)
 linear()
+
+plot_learning_curve(LinearRegression(), 'Test', X, y, cv=5)
