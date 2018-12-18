@@ -27,16 +27,12 @@ X_n = scaler.fit_transform(X)
 
 
 #PLot the target VS each features (normalized)
-plt.figure(figsize=(10,10))
-for i in range(4):
-    plt.subplot(4,2,2*i+1)
-    plt.scatter(X_n[:,2*i],y)
-    plt.title(colom[2*i])
-    plt.subplot(4,2,2*i+2)
-    plt.scatter(X_n[:,2*i+1],y)
-    plt.title(colom[2*i+1])
-    
-plt.subplots_adjust(top=0.92, bottom=0.08, left=0.10, right=0.95, hspace=0.70,
+plt.figure(figsize=(10,5))
+for i in range(8):
+    plt.subplot(3,3,i+1)
+    plt.scatter(X_n[:,i],y,s=10)
+    plt.title(colom[i])   
+plt.subplots_adjust(top=0.92, bottom=0.08, left=0.10, right=0.95, hspace=0.60,
                 wspace=0.2)
 plt.savefig('scatterFeatures.png')
 
@@ -96,5 +92,9 @@ plt.figure(figsize=(10,5))
 plt.bar(colom, corry, width, color="green")
 plt.ylabel("Mutual information")
 plt.savefig('mutualInformationTarget.png')
+
+for i in range(8):
+    print("MI of %s is: %f" % (colom[i], corry[i]))
+    
 
         

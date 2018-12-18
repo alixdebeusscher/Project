@@ -15,7 +15,7 @@ dataset.shape
 X = dataset.drop('ccs',axis=1).values
 y = dataset['ccs'].values
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, shuffle=True)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, shuffle=True)
 
 scaler = MinMaxScaler()
 
@@ -39,7 +39,7 @@ tab = [0, 0, 0, 0, 0, 0, 0, 0]
 for each in colom:
     for i in range(10000):
         tab[k]+=regressor.coef_[k]/10000
-    print("ECoef of %s is: %f", each, tab[k])        
+    print("Coef of %s is: %f" % (each, tab[k]))        
     k+=1
 
 y = tab
