@@ -53,12 +53,11 @@ def linear():
         #print("ECoef of %s is: %f", each, tab[k])        
         k+=1
     
-    y = tab
-    N = len(y)
-    x = range(N)
     width = 1/1.5
-    plt.subplots(1)
-    plt.bar(x, y, width, color="green")
+    plt.figure(figsize=(10,3))
+    plt.bar(col[:-1], tab, width, color="green")
+    plt.savefig('coef.png')
+    
     
     
   #  fig = plt.gcf()
