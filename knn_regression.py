@@ -8,16 +8,14 @@ from math import sqrt
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 
-def normalize(X_train, X_test):
+def normalize(X_train):
     scaler = MinMaxScaler()
 
     x_train_scaled = scaler.fit_transform(X_train)
     x_train = pd.DataFrame(x_train_scaled)
     
-    x_test_scaled = scaler.fit_transform(X_test)
-    x_test = pd.DataFrame(x_test_scaled)
     
-    return x_train, x_test
+    return x_train
 
 def get_k(X_train,X_test,y_train,y_test,max_k):
     rmse_val = [] #to store rmse values for different k
@@ -36,28 +34,18 @@ def get_k(X_train,X_test,y_train,y_test,max_k):
     p = rmse_val.index(min(rmse_val))
     return k,p
 
-def linear():
+def linear(X,y):
     regressor = LinearRegression()
       
-    regressor.fit(X_train, y_train)  
-    #print('EIC', regressor.intercept_)
-    #print('NOC', len(regressor.coef_))
-    pred = regressor.predict(X_test)  
-    error = sqrt(mean_squared_error(y_test,pred)) #calculate rmse
-    print('error of linear is', error)
-    
-    k = 0
-    tab = [0, 0, 0, 0, 0, 0, 0, 0]
-    for each in col[:-1]:
-        for i in range(10000):
-            tab[k]+=regressor.coef_[k]/10000
-        #print("ECoef of %s is: %f", each, tab[k])        
-        k+=1
+    regressor.fit(X, y)  
+    print(regressor.coef_)
     
     width = 1/1.5
     plt.figure(figsize=(10,3))
-    plt.bar(col[:-1], tab, width, color="green")
+    plt.bar(col[:-1], regressor.coef_, width, color="green")
     plt.savefig('coef.png')
+    
+    plot_learning_curve(LinearRegression(), 'Test', X, y, cv=5)
     
     
     
@@ -74,13 +62,15 @@ col = list(X1)
 X = X1.drop(col[-1],axis=1).values
 y = X1[col[-1]].values
 
+X_scaled = normalize(X)
+linear(X,y)
+linear(X_scaled,y)
 #split data
-X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.3, shuffle=True)
+#X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.3, shuffle=True)
 
 #normalize data
 x_train, x_test = normalize(X_train, X_test)
 rmse, k = get_k(X_train,X_test,y_train,y_test,30)
 print('Least rmse is:', rmse, 'with k:', k)
-linear()
 
-plot_learning_curve(LinearRegression(), 'Test', X, y, cv=5)
+

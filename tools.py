@@ -13,7 +13,7 @@ def score_function(model, X, Y):
     return np.sqrt(np.mean(((model.predict(X) - Y)) **2, axis=0)).sum()
 
 def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
-                        n_jobs=None, train_sizes=np.linspace(.1, 1.0, 5)):
+                        n_jobs=None, train_sizes=np.linspace(.1, 1.0, 20)):
     """
     Generate a simple plot of the test and training learning curve.
 
@@ -92,4 +92,7 @@ def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
              label="Cross-validation score")
 
     plt.legend(loc="best")
+    
+    print('Test score mean',test_scores_mean[-1])
+    print('Test score std',test_scores_std[-1])
     return plt
