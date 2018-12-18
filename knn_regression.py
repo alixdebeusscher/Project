@@ -1,3 +1,4 @@
+from tools import *
 import pandas as pd
 import matplotlib.pyplot as plt 
 from sklearn import neighbors
@@ -14,16 +15,14 @@ from sklearn.datasets import load_digits
 from sklearn.model_selection import learning_curve
 from sklearn.model_selection import ShuffleSplit
 
-def normalize(X_train, X_test):
+def normalize(X_train):
     scaler = MinMaxScaler()
 
     x_train_scaled = scaler.fit_transform(X_train)
     x_train = pd.DataFrame(x_train_scaled)
     
-    x_test_scaled = scaler.fit_transform(X_test)
-    x_test = pd.DataFrame(x_test_scaled)
     
-    return x_train, x_test
+    return x_train
 
 def get_k(X_train,X_test,y_train,y_test,max_k):
     rmse_val = [] #to store rmse values for different k
@@ -42,29 +41,27 @@ def get_k(X_train,X_test,y_train,y_test,max_k):
     p = rmse_val.index(min(rmse_val))
     return k,p
 
-def linear():
+def linear(X,y):
     regressor = LinearRegression()
       
-    regressor.fit(X_train, y_train)  
-    #print('EIC', regressor.intercept_)
-    #print('NOC', len(regressor.coef_))
-    pred = regressor.predict(X_test)  
-    error = sqrt(mean_squared_error(y_test,pred)) #calculate rmse
-    print('error of linear is', error)
-    
-    k = 0
-    tab = [0, 0, 0, 0, 0, 0, 0, 0]
-    for each in col[:-1]:
-        for i in range(10000):
-            tab[k]+=regressor.coef_[k]/10000
-        #print("ECoef of %s is: %f", each, tab[k])        
-        k+=1
+    regressor.fit(X, y)  
+    print(regressor.coef_)
     
     width = 1/1.5
     plt.figure(figsize=(10,3))
-    plt.bar(col[:-1], tab, width, color="green")
+    plt.bar(col[:-1], regressor.coef_, width, color="green")
     plt.savefig('coef.png')
     
+<<<<<<< HEAD
+=======
+    plot_learning_curve(LinearRegression(), 'Test', X, y, cv=5)
+    
+    
+    
+  #  fig = plt.gcf()
+
+    
+>>>>>>> bf172e890693e7697e85695ad7bb14d20e618ef5
 #Read test file
 X1=pd.read_csv("X1_t1.csv")
 
@@ -75,11 +72,15 @@ col = list(X1)
 X = X1.drop(col[-1],axis=1).values
 y = X1[col[-1]].values
 
+X_scaled = normalize(X)
+linear(X,y)
+linear(X_scaled,y)
 #split data
-X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.3, shuffle=True)
+#X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.3, shuffle=True)
 
 #normalize data
 x_train, x_test = normalize(X_train, X_test)
 rmse, k = get_k(X_train,X_test,y_train,y_test,30)
 print('Least rmse is:', rmse, 'with k:', k)
-linear()
+
+
