@@ -6,6 +6,13 @@ from sklearn.metrics import mean_squared_error
 from math import sqrt
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.naive_bayes import GaussianNB
+from sklearn.svm import SVC
+from sklearn.datasets import load_digits
+from sklearn.model_selection import learning_curve
+from sklearn.model_selection import ShuffleSplit
 
 def normalize(X_train, X_test):
     scaler = MinMaxScaler()
@@ -57,11 +64,6 @@ def linear():
     plt.figure(figsize=(10,3))
     plt.bar(col[:-1], tab, width, color="green")
     plt.savefig('coef.png')
-    
-    
-    
-  #  fig = plt.gcf()
-
     
 #Read test file
 X1=pd.read_csv("X1_t1.csv")
