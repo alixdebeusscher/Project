@@ -5,10 +5,21 @@ from sklearn.svm import SVC
 from sklearn.datasets import load_digits
 from sklearn.model_selection import learning_curve
 from sklearn.model_selection import ShuffleSplit
+from sklearn.preprocessing import MinMaxScaler
+
+def normalize(X_train):
+    scaler = MinMaxScaler()
+    x_train_scaled = scaler.fit_transform(X_train)
+    #x_train = pd.DataFrame(x_train_scaled)
+    return x_train_scaled
 
 def score_function(model, X, Y):
     'norm-2 criterion for optimization of models'
     return np.sqrt(np.mean(((model.predict(X) - Y)) **2, axis=0)).sum()
+
+def score_function_neg(model, X, Y):
+    'norm-2 criterion for optimization of models'
+    return -np.sqrt(np.mean(((model.predict(X) - Y)) **2, axis=0)).sum()
 
 def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
                         n_jobs=None, train_sizes=np.linspace(.1, 1.0, 20)):

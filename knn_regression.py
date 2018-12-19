@@ -6,7 +6,6 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error 
 from math import sqrt
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.naive_bayes import GaussianNB
@@ -17,12 +16,6 @@ from sklearn.model_selection import ShuffleSplit
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import cross_val_score
 import itertools as it
-
-def normalize(X_train):
-    scaler = MinMaxScaler()
-    x_train_scaled = scaler.fit_transform(X_train)
-    #x_train = pd.DataFrame(x_train_scaled)
-    return x_train_scaled
 
 def linear(X,y):
     regressor = LinearRegression()
@@ -96,7 +89,7 @@ col = list(X1)
 X = X1.drop(col[-1],axis=1).values
 y = X1[col[-1]].values
 
-<<<<<<< HEAD
+
 
 linear(X,y)
 X_scaled = normalize(X)
@@ -112,7 +105,7 @@ linear(X_scaled,y)
 #print(x_train[4])
 #rmse, k = get_k(x_train,x_test,y_train,y_test,100)
 #print('Least rmse is:', rmse, 'with k:', k)
-=======
+
 #linear(X,y)
 #X_scaled = normalize(X)
 #linear(X_scaled,y)
@@ -126,7 +119,7 @@ x_train = normalize(X_train)
 x_test = normalize(X_test)
 rmse, k = get_k(x_train,x_test,y_train,y_test,100)
 print('Least rmse is:', rmse, 'with k:', k)
->>>>>>> adc7edaef85f95001e6bfffa34d7f4f12fe56c01
+
 
 def best_features_meta_parameter(X,y,estimator,param_grid):
     size = X.shape
