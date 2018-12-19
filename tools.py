@@ -22,7 +22,8 @@ def score_function_neg(model, X, Y):
     return -np.sqrt(np.mean(((model.predict(X) - Y)) **2, axis=0)).sum()
 
 
-#
+#Come from the site scikit learn, 
+# URL : https://scikit-learn.org/stable/auto_examples/model_selection/plot_learning_curve.html
 def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
                         n_jobs=None, train_sizes=np.linspace(.1, 1.0, 20)):
     """

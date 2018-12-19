@@ -210,25 +210,27 @@ plt.savefig('NbrLayers.png')
 #%% Test
 mlpFeatures = MLPRegressor(max_iter=2000)
 parameter_space = {
-    'hidden_layer_sizes': [(13,)],
-    'solver' : ['lbfgs'],
-    'activation' :['tanh']
-}
+        'hidden_layer_sizes': [(12,),(13,),(14,)],
+        'solver': ['lbfgs'],
+        'activation' : ['tanh'],
+    }
 
  
  
-f = time.time()
 clfFeatures = GridSearchCV(mlpFeatures, parameter_space, cv=5, scoring = score_function_neg)
 X_best = X_n
-nbrFeatures = 8
+nbrFeatures = 7
 toRemove = None
 BestParams = None
 NotBest = True 
 newCol = col
 clfFeatures.fit(X_n, y)
 minRMS = -clfFeatures.best_score_
+print(minRMS)
+print(clfFeatures.best_params_)
 while (NotBest):
-    for i in range(nbrFeatures):
+    f = time.time()
+    for i in range(1,nbrFeatures):
         X_try = np.delete(X_best,i,1)
         clfFeatures.fit(X_try, y)
         print(-clfFeatures.best_score_)
@@ -237,16 +239,27 @@ while (NotBest):
             toRemove = i
             print(toRemove)
             BestParams = clfFeatures.best_params_
+            print(BestParams)
+    print('Time : ', time.time()-f)
     if toRemove == None:
         NotBest = False
     else:
         newCol = np.delete(newCol,toRemove,0)
         X_best = np.delete(X_best,toRemove,1)
         nbrFeatures -= 1
-        toRemove = None 
-        
-print(time.time()-f)      
-        
-#%% 
+        toRemove = None      
 
-    
+print('FINAL SOLUTION')
+print(minRMS)
+print(BestParams)
+print(newCol)
+
+#%%
+model = MLPRegressor(max_iter=2000,activation = 'tanh', 
+                     hidden_layer_sizes = (13,),solver = 'lbfgs')
+plot_learning_curve(model, '', X_n, y, cv=5)
+plt.savefig('FinalMLP.png')
+#%% 
+score = cross_val_score(model,X_n,y, cv=5, scoring=score_function)
+print(score.mean())
+print(score.std())
