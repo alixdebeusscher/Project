@@ -131,6 +131,81 @@ fig.tight_layout()
 
 ###### 
 
+# this class offers a wrapper for meta-parameter learning
+class MetaLearner():
+    'super-wrapper for a model that will learn the best meta-parameters'
+    
+    def __init__(self, model_generator, **paramspace):
+        skbase.BaseEstimator.__init__(self)
+        self.model_g = model_generator
+        self.pspace  = paramspace
+        self.c_model = None # current model
+        self.parameters = None
+    
+    def fit(self, data, target):
+        if not self.model_g:
+            return
+        self.parameters, _ = learn_hyperparameters(self.model_g, data, target, **self.pspace)
+        print('best parameters are:', self.parameters)
+        self.c_model  = self.model_g(**self.parameters)
+        self.c_model.fit(data, target)
+        return self
+        
+    def get_parameters(self):
+        if self.parameters is None:
+            raise Exception('Cannot compute parameters without call to fit() [MetaLearner error]')
+        return self.parameters
+    
+    def get_model(self):
+        'return current best-fit model'
+        return self.c_model
+   
+    def predict(self, data):
+        if self.c_model is None:
+            raise Exception('cannot predict without call to fit() first [MetaLearner error]')
+        return self.c_model.predict(data)
+    
+    def get_params(self, deep=True):
+        'needed by scikit'
+        return {'model_generator':self.model_g, **self.pspace}
+    
+    # cross validation for the overal dataset (this is not a basic estimator, alas)
+    # warning: pretty heavy :P
+    def cross_validate(self, data, target, cv = 10, score=score_function, doprint=True):
+        'apply k-fold cross validation on parameter learning'
+        scores = np.zeros((cv,))
+        nd, nf = data.shape
+        chunk  = nd // cv
+        for i in range(cv):
+            M = min(chunk*(i+1), nd)
+            test  = np.arange(chunk*i, M)
+            train = np.concatenate( (np.arange(0,chunk*i), np.arange(M,nd)) )
+            # fit, predict, and compute error
+            self.fit(data[train,:], target[train])
+            scores[i] = score( self, data[test,:], target[test] )
+        # same as before
+        if doprint:
+            print("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+        return (scores.mean(), scores.std())
+    
+    def ret_scores(self, data, target, cv = 10, score=score_function, doprint=True):
+        'apply k-fold cross validation on parameter learning'
+        scores = np.zeros((cv,))
+        nd, nf = data.shape
+        chunk  = nd // cv
+        for i in range(cv):
+            M = min(chunk*(i+1), nd)
+            test  = np.arange(chunk*i, M)
+            train = np.concatenate( (np.arange(0,chunk*i), np.arange(M,nd)) )
+            # fit, predict, and compute error
+            self.fit(data[train,:], target[train])
+            scores[i] = score( self, data[test,:], target[test] )
+        # same as before
+        if doprint:
+            print("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+        return (scores, scores)
+
+
 def select_features_and_hyperparams(model_generator, data, target, cv_cv=10, cv_score=score_function, **paramspaces):
     # prepare exploration algorithm for hyperparams
     pnames = tuple(paramspaces.keys())        # names of the parameters
@@ -200,9 +275,8 @@ class FeatureSelectorMetaLearnerModel(MetaLearner):
 class SequenceModel(skbase.BaseEstimator):
     'learns on one target, then uses the prediction as feature for second target'
     
-    def __init__(self, model1, model2):
+    def __init__(self, model1):
         self.model1 = model1
-        self.model2 = model2
     
     def fit(self, X, y, **kwargs):
         data, targets = X,y
@@ -211,33 +285,23 @@ class SequenceModel(skbase.BaseEstimator):
             raise Exception('You are missing a target (target.shape = ' + str(y.shape))
         # split targets (first one will be used as feature)
         target1 = targets[:,0].ravel()
-        target2 = targets[:,1].ravel()
         # fit the first model to learn target 1
         print('learning model 1')
         self.model1.fit(data, target1)
-        # extend the data using predicion
-        extended_data = extend_data(self.model1, data)
-        # fit the second model to learn target 2
-        print('learning model 2')
-        self.model2.fit(extended_data, target2)
         return self
     
     def predict(self, data):
         # predict first target
         target1 = self.model1.predict(data)
-        # extend data with target 1
-        extended_data = extend_data(self.model1, data)
-        # predict second target
-        target2 = self.model2.predict(extended_data)
         # concatenate the results
-        return combine_targets(target1, target2)
+        return target1
     
     def get_params(self, deep=True):
-        return {'model1':self.model1, 'model2':self.model2}
+        return {'model1':self.model1}
 
 fsknn_cl = FeatureSelectorMetaLearnerModel(KNeighborsRegressor, n_neighbors=[2, 4, 8, 10, 12, 14, 16, 18, 20] )
 
 # build a model that uses estimate of hl for cl
-ultimate_knn = SequenceModel(fsknn_hl, fsknn_cl)
+ultimate_knn = SequenceModel(fsknn_cl)
 
-    
+plot_learning_curve(fsknn_cl, 'Learning curve for full KNN on both targets', X, y, cv=5)
