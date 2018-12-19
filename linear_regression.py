@@ -1,6 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt 
-import numpy
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import MinMaxScaler
@@ -51,7 +51,7 @@ def cross_validate(model, data, target, cv = 10, score=score_function, doprint=F
     return (scores.mean(), scores.std())
 
 
-def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
+def plot_learning_curve(estimator, X, y, ylim=None, cv=None,
                         n_jobs=1, train_sizes=np.linspace(.1, 1.0, 20), scoring=score_function):
     """
     Generate a simple plot of the test and training learning curve.
@@ -94,7 +94,7 @@ def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
         Number of jobs to run in parallel (default 1).
     """
     plt.figure()
-    plt.title(title)
+    #plt.title(title)
     if ylim is not None:
         plt.ylim(*ylim)
     plt.xlabel("Training examples")
@@ -118,9 +118,12 @@ def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
              label="Cross-validation score")
 
     plt.legend(loc="best")
+    print(test_scores_mean)
+    print(test_scores_std)
+    plt.savefig('cv_lr.png')
     return plt
 
-fig = plot_learning_curve(regressor, 'Linear regression cooling load learning curve', 
+fig = plot_learning_curve(regressor, 
                           X,y, cv=10)
 fig.tight_layout()
 

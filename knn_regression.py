@@ -64,7 +64,7 @@ def linear(X,y):
     plt.bar(col[:-1], regressor.coef_, width, color="green")
     plt.savefig('coef.png')
     
-    plot_learning_curve(LinearRegression(), 'Test', X, y, cv=5)
+    plot_learning_curve(LinearRegression(), '', X, y, cv=5).savefig('lr.png')
 
 #Read test file
 X1=pd.read_csv("X1_t1.csv")
@@ -77,19 +77,19 @@ X = X1.drop(col[-1],axis=1).values
 y = X1[col[-1]].values
 
 
-#linear(X,y)
-#X_scaled = normalize(X)
-#linear(X_scaled,y)
+linear(X,y)
+X_scaled = normalize(X)
+linear(X_scaled,y)
 #split data
-X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.33, shuffle=False)
-rmse, k = get_k(X_train,X_test,y_train,y_test,100)
-print('Least rmse is:', rmse, 'with k:', k)
-print(X_train[4])
-#normalize data
-x_train = normalize(X_train)
-x_test = normalize(X_test)
-print(x_train[4])
-rmse, k = get_k(x_train,x_test,y_train,y_test,100)
-print('Least rmse is:', rmse, 'with k:', k)
+#X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.33, shuffle=False)
+#rmse, k = get_k(X_train,X_test,y_train,y_test,100)
+#print('Least rmse is:', rmse, 'with k:', k)
+#print(X_train[4])
+##normalize data
+#x_train = normalize(X_train)
+#x_test = normalize(X_test)
+#print(x_train[4])
+#rmse, k = get_k(x_train,x_test,y_train,y_test,100)
+#print('Least rmse is:', rmse, 'with k:', k)
 
 
