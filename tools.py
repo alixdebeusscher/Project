@@ -21,6 +21,8 @@ def score_function_neg(model, X, Y):
     'norm-2 criterion for optimization of models'
     return -np.sqrt(np.mean(((model.predict(X) - Y)) **2, axis=0)).sum()
 
+
+#
 def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
                         n_jobs=None, train_sizes=np.linspace(.1, 1.0, 20)):
     """

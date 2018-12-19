@@ -1,4 +1,4 @@
-from tools import *
+from tools
 import pandas as pd
 import matplotlib.pyplot as plt 
 from sklearn import neighbors
@@ -17,6 +17,8 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import cross_val_score
 import itertools as it
 
+
+
 def linear(X,y):
     regressor = LinearRegression()
       
@@ -28,7 +30,9 @@ def linear(X,y):
     plt.bar(col[:-1], regressor.coef_, width, color="green")
     plt.savefig('coef.png')
     
-    plot_learning_curve(LinearRegression(), 'Test', X, y, cv=5)
+    plot_learning_curve(LinearRegression(), '', X, y, cv=5)
+    plt.savefig('lr.png')
+
 
 def get_k(X_train,X_test,y_train,y_test,max_k):
     rmse_val = [] #to store rmse values for different k
@@ -63,37 +67,7 @@ def get_k(X_train,X_test,y_train,y_test,max_k):
     p = rmse_val.index(min(rmse_val))+1
     return k,p
 
-<<<<<<< HEAD
-def linear(X,y):
-    regressor = LinearRegression()
-      
-    regressor.fit(X, y)  
-    print(regressor.coef_)
-    
-    width = 1/1.5
-    plt.figure(figsize=(10,3))
-    plt.bar(col[:-1], regressor.coef_, width, color="green")
-    plt.savefig('coef.png')
-    
-    plot_learning_curve(LinearRegression(), '', X, y, cv=5).savefig('lr.png')
 
-=======
->>>>>>> adc7edaef85f95001e6bfffa34d7f4f12fe56c01
-#Read test file
-X1=pd.read_csv("X1_t1.csv")
-
-#column name
-col = list(X1)
-
-#Split test file in learning set and test set
-X = X1.drop(col[-1],axis=1).values
-y = X1[col[-1]].values
-
-
-
-linear(X,y)
-X_scaled = normalize(X)
-linear(X_scaled,y)
 #split data
 #X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.33, shuffle=False)
 #rmse, k = get_k(X_train,X_test,y_train,y_test,100)

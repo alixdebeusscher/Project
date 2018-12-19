@@ -8,42 +8,20 @@ from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPRegressor
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import GridSearchCV
+from sklearn.feature_selection import RFECV
 
 #Read test file
 X1=pd.read_csv("X1_t1.csv")
 #column name
 col = list(X1)
+col.pop(-1)
 #Split test file in learning set and test set
 X = X1.drop(col[-1],axis=1).values
 y = X1[col[-1]].values
 
 X_n = normalize(X)
-#clf = MLPRegressor(alpha=0.0001, hidden_layer_sizes = (50,), max_iter = 50000, 
-#                 activation = 'logistic', verbose = 'True', learning_rate = 'adaptive')
-#a = clf.fit(Xtrain, Ytrain)
-#
-#pred_y = clf.predict(Xtest) # predict network output given x_
-#fig = plt.figure() 
-#plt.plot(Xtest, Ytest, color = 'b') # plot original function
-#plt.subplots(1)
-#plt.plot(Xtest, pred_y, '-') # plot network output
 
 mlp = MLPRegressor(max_iter=2000)
-
-#parameter_space = {
-#    'hidden_layer_sizes': [(50,50,50), (50,100,50), (100,)],
-#    'activation': ['tanh', 'relu'],
-#    'solver': ['sgd', 'adam'],
-#    'alpha': [0.0001, 0.05],
-#    'learning_rate': ['constant','adaptive'],
-#}
-#parameter_space = {
-#    'hidden_layer_sizes': [(50,)],
-#    'verbose': ['True'],
-#    'activation': ['logistic'],
-#    'alpha': [0.0001],
-#    'learning_rate': ['adaptive'],
-#}
 
 
 parameter_space = {
@@ -74,13 +52,14 @@ for mean, std, params in zip(means, stds, clf.cv_results_['params']):
  
     
 
-############# NUMBER NEURONS #############  
+#%% NUMBER NEURONS  
 mlp = MLPRegressor(max_iter=2000,solver='lbfgs',activation='relu')
 
+train_sizes = range(1,31)
 NumberNeurons1 = []
 NumberNeurons2 = []
 NumberNeurons3 = []
-for i in range(10,61):
+for i in train_sizes:
     NumberNeurons1.append((i,))
     NumberNeurons2.append((i,)*3)
     NumberNeurons3.append((i,)*5)
@@ -111,52 +90,58 @@ clfNbrN3.fit(X_n, y)
 el = time.time() - f
 print(el)
 
+#print('Best parameters found:\n', clfNbrL1.best_params_)
+#means = -clfNbrL1.cv_results_['mean_test_score']
+#stds = -clfNbrL1.cv_results_['std_test_score']
+#for mean, std, params in zip(means, stds, clfNbrL1.cv_results_['params']):
+#    print("%0.3f (+/-%0.03f) for %r" % (mean, std * 2, params))
+
+
 # Best paramete set
 print('Best parameters found:\n', clfNbrN1.best_params_)
 print('Best parameters found:\n', clfNbrN2.best_params_)
 print('Best parameters found:\n', clfNbrN3.best_params_)
 
 # All results
-means1 = clfNbrN1.cv_results_['mean_test_score']
-stds1 = clfNbrN1.cv_results_['std_test_score']
-means2 = clfNbrN2.cv_results_['mean_test_score']
-stds2 = clfNbrN2.cv_results_['std_test_score']
-means3 = clfNbrN3.cv_results_['mean_test_score']
-stds3 = clfNbrN3.cv_results_['std_test_score']
-train_sizes = means1.shape
+means1 = -clfNbrN1.cv_results_['mean_test_score']
+stds1 = -clfNbrN1.cv_results_['std_test_score']
+means2 = -clfNbrN2.cv_results_['mean_test_score']
+stds2 = -clfNbrN2.cv_results_['std_test_score']
+means3 = -clfNbrN3.cv_results_['mean_test_score']
+stds3 = -clfNbrN3.cv_results_['std_test_score']
 
+#%% PLot
 plt.figure()
-plt.title('Test')
-plt.xlabel("Training examples")
-plt.ylabel("Score")
+plt.xlabel("Number of neurones")
+plt.ylabel("RMSE")
 plt.grid()
-plt.fill_between(range(1,52), means1 - stds1,
+plt.fill_between(train_sizes, means1 - stds1,
                  means1 + stds1, alpha=0.1,
                  color="r")
-plt.fill_between(range(1,52), means2 - stds2,
+plt.fill_between(train_sizes, means2 - stds2,
                  means2 + stds2, alpha=0.1, color="g")
-plt.fill_between(range(1,52), means3 - stds3,
+plt.fill_between(train_sizes, means3 - stds3,
                  means1 + stds3, alpha=0.1,
                  color="b")
-plt.plot(range(1,52), means1, color="r",
+plt.plot(train_sizes, means1, color="r",
          label="One layer")
-plt.plot(range(1,52), means2, color="g",
+plt.plot(train_sizes, means2, color="g",
          label="Three layers")
-plt.plot(range(1,52), means3, color="b",
+plt.plot(train_sizes, means3, color="b",
          label="Five layers")
 plt.legend(loc="best")
-
+plt.savefig('NbrNeurones.png')
     
     
-    
-############# NUMBER LAYERS #############  
+#%% NUMBER LAYERS
 NumberLayers1 = []
 NumberLayers2 = []
 NumberLayers3 = []
-for i in range(1,11):
-    NumberLayers1.append((15,)*i)
-    NumberLayers2.append((30,)*i)
-    NumberLayers3.append((45,)*i)
+train_sizes = range(1,11)
+for i in train_sizes:
+    NumberLayers1.append((5,)*i)
+    NumberLayers2.append((15,)*i)
+    NumberLayers3.append((30,)*i)
     
 parameter_space1 = {
     'hidden_layer_sizes': NumberLayers1,
@@ -188,3 +173,80 @@ print(el)
 print('Best parameters found:\n', clfNbrL1.best_params_)
 print('Best parameters found:\n', clfNbrL2.best_params_)
 print('Best parameters found:\n', clfNbrL3.best_params_)
+
+# All results
+means1 = -clfNbrL1.cv_results_['mean_test_score']
+stds1 = -clfNbrL1.cv_results_['std_test_score']
+means2 = -clfNbrL2.cv_results_['mean_test_score']
+stds2 = -clfNbrL2.cv_results_['std_test_score']
+means3 = -clfNbrL3.cv_results_['mean_test_score']
+stds3 = -clfNbrL3.cv_results_['std_test_score']
+
+#%% PLot
+plt.figure()
+plt.xlabel("Number of layers")
+plt.ylabel("RMSE")
+plt.grid()
+plt.fill_between(train_sizes, means1 - stds1,
+                 means1 + stds1, alpha=0.1,
+                 color="r")
+plt.fill_between(train_sizes, means2 - stds2,
+                 means2 + stds2, alpha=0.1, color="g")
+plt.fill_between(train_sizes, means3 - stds3,
+                 means1 + stds3, alpha=0.1,
+                 color="b")
+plt.plot(train_sizes, means1, color="r",
+         label="Five neurones")
+plt.plot(train_sizes, means2, color="g",
+         label="Fifteen neurones")
+plt.plot(train_sizes, means3, color="b",
+         label="Thirty neurones")
+plt.legend(loc="best")
+plt.savefig('NbrLayers.png')
+
+
+
+
+#%% Test
+mlpFeatures = MLPRegressor(max_iter=2000)
+parameter_space = {
+    'hidden_layer_sizes': [(13,)],
+    'solver' : ['lbfgs'],
+    'activation' :['tanh']
+}
+
+ 
+ 
+f = time.time()
+clfFeatures = GridSearchCV(mlpFeatures, parameter_space, cv=5, scoring = score_function_neg)
+X_best = X_n
+nbrFeatures = 8
+toRemove = None
+BestParams = None
+NotBest = True 
+newCol = col
+clfFeatures.fit(X_n, y)
+minRMS = -clfFeatures.best_score_
+while (NotBest):
+    for i in range(nbrFeatures):
+        X_try = np.delete(X_best,i,1)
+        clfFeatures.fit(X_try, y)
+        print(-clfFeatures.best_score_)
+        if -clfFeatures.best_score_ <= minRMS:
+            minRMS = -clfFeatures.best_score_
+            toRemove = i
+            print(toRemove)
+            BestParams = clfFeatures.best_params_
+    if toRemove == None:
+        NotBest = False
+    else:
+        newCol = np.delete(newCol,toRemove,0)
+        X_best = np.delete(X_best,toRemove,1)
+        nbrFeatures -= 1
+        toRemove = None 
+        
+print(time.time()-f)      
+        
+#%% 
+
+    
