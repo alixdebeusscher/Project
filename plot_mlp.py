@@ -143,4 +143,4 @@ pred = mlp.predict(X_pred)
 pred = pd.DataFrame(pred)
 pred = pred.values
 #print(pred)
-np.savetxt("Y2.csv", pred,  fmt='%1.1e')
+np.savetxt("Y2_gr_U.csv", pred,  fmt='%1.1e')
