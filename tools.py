@@ -7,14 +7,8 @@ from sklearn.neural_network import MLPRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import learning_curve
 from sklearn.model_selection import GridSearchCV
-#from sklearn.feature_selection import RFECV
-#import scipy.io
-#import scipy.stats as stats
 from sklearn.linear_model import LinearRegression
 from sklearn import preprocessing
-#import seaborn as sns
-#import plotly.plotly as py
-#import plotly.tools as tls
 from math import sqrt
 from sklearn import neighbors
 from sklearn.model_selection import cross_val_score
@@ -118,6 +112,6 @@ def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
 
     plt.legend(loc="best")
     
-    print('Test score mean',test_scores_mean[-1])
-    print('Test score std',test_scores_std[-1])
+    #print('Test score mean',test_scores_mean[-1])
+    #print('Test score std',test_scores_std[-1])
     return plt

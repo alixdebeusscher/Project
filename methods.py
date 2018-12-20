@@ -1,28 +1,4 @@
-<<<<<<< HEAD
 from tools import *
-=======
-import tools
-
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt 
-import scipy.io
-import scipy.stats as stats
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn import preprocessing
-import seaborn as sns
-import plotly.plotly as py
-import plotly.tools as tls
-from sklearn.preprocessing import MinMaxScaler
-from math import sqrt
-from sklearn.metrics import mean_squared_error 
-from sklearn import neighbors
-from sklearn.model_selection import cross_val_score
-import itertools as it
-from sklearn.model_selection import GridSearchCV
-from sklearn.neural_network import MLPRegressor
->>>>>>> c7a4c5e43782627d3f3fa96d5800ba3b40be2035
 
 def data_analysis(X,X_n,y,col):
     #PLot the target VS each features (normalized)
@@ -82,21 +58,19 @@ def data_analysis(X,X_n,y,col):
         d2  = distribution(y)
         E   = entropy(d1) + entropy(d2)
         corry[i] = (E - entropy(d12)) / entropy(d12)   
-    for i in range(8):
-        print("MI of %s is: %f" % (col[i], corry[i]))
+        #print("MI of %s is: %f" % (col[i], corry[i]))
 
 
 def linear(X,y,col):
     regressor = LinearRegression()
       
     regressor.fit(X, y)  
-    print('Coefficient of the linear regression : ',regressor.coef_)
+    #print('Coefficient of the linear regression : ',regressor.coef_)
     
     width = 1/1.5
     plt.figure(figsize=(10,3))
     plt.bar(col, regressor.coef_, width, color="green")
     plt.savefig('coef.png')
-   # tools.
     plot_learning_curve(regressor, '', X, y, cv=5)
     plt.savefig('lr.png')
     
@@ -131,12 +105,12 @@ def kNN(X,y,col):
     
     X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.33, shuffle=False)
     rmse, k = get_k(X_train,X_test,y_train,y_test,100)
-    print('Least rmse is:', rmse, 'with k:', k)
+    #print('Least rmse is:', rmse, 'with k:', k)
     #normalize data
     x_train = normalize(X_train)
     x_test = normalize(X_test)
     rmse, k = get_k(x_train,x_test,y_train,y_test,100)
-    print('Least rmse is:', rmse, 'with k:', k)
+    #print('Least rmse is:', rmse, 'with k:', k)
     
     # Use to fit the best k and  eatures to the kNN
     def best_features_meta_parameter(X,y,estimator,param_grid):
@@ -163,14 +137,11 @@ def kNN(X,y,col):
     #model.fit(X,y)
     estimator = neighbors.KNeighborsRegressor
     (Result,k,features) = best_features_meta_parameter(X,y,estimator,param_grid = range(1,5))
-    print('BEST MODEL FOR KNN')
-    print('k = ',k)
-    print('features = ',features)
+    #print('BEST MODEL FOR KNN')
+    #print('k = ',k)
+    #print('features = ',features)
     model = estimator(n_neighbors=k)
-<<<<<<< HEAD
     plot_learning_curve(model, 'Test', X[:,features], y, cv=10)
-=======
-    tools.plot_learning_curve(model, 'Test', X[:,features], y, cv=10)
     
 def mlp_solver_activation(X_n,y,col):
     mlp = MLPRegressor(max_iter=2000) 
@@ -180,17 +151,17 @@ def mlp_solver_activation(X_n,y,col):
     }
     
     # do stuff
-    clf = GridSearchCV(mlp, parameter_space, cv=5, scoring = tools.score_function_neg)
+    clf = GridSearchCV(mlp, parameter_space, cv=5, scoring = score_function_neg)
     clf.fit(X_n, y)
 
     # Best paramete set
-    print('Best parameters found:\n', clf.best_params_)
+    #print('Best parameters found:\n', clf.best_params_)
     
     # All results
     means = clf.cv_results_['mean_test_score']
     stds = clf.cv_results_['std_test_score']
-    for mean, std, params in zip(means, stds, clf.cv_results_['params']):
-        print("%0.3f (+/-%0.03f) for %r" % (mean, std * 2, params))
+    #for mean, std, params in zip(means, stds, clf.cv_results_['params']):
+        #print("%0.3f (+/-%0.03f) for %r" % (mean, std * 2, params))
         
 def mlp_nbr_neurons(X_n,y,col):
     mlp = MLPRegressor(max_iter=2000,solver='lbfgs',activation='relu')
@@ -214,17 +185,17 @@ def mlp_nbr_neurons(X_n,y,col):
         'hidden_layer_sizes': NumberNeurons3,
     }
     
-    clfNbrN1 = GridSearchCV(mlp, parameter_space1, cv=5, scoring = tools.score_function_neg)
-    clfNbrN2 = GridSearchCV(mlp, parameter_space2, cv=5, scoring = tools.score_function_neg)
-    clfNbrN3 = GridSearchCV(mlp, parameter_space3, cv=5, scoring = tools.score_function_neg)
+    clfNbrN1 = GridSearchCV(mlp, parameter_space1, cv=5, scoring = score_function_neg)
+    clfNbrN2 = GridSearchCV(mlp, parameter_space2, cv=5, scoring = score_function_neg)
+    clfNbrN3 = GridSearchCV(mlp, parameter_space3, cv=5, scoring = score_function_neg)
     clfNbrN1.fit(X_n, y)
     clfNbrN2.fit(X_n, y)
     clfNbrN3.fit(X_n, y)   
     
     # Best paramete set
-    print('Best parameters found:\n', clfNbrN1.best_params_)
-    print('Best parameters found:\n', clfNbrN2.best_params_)
-    print('Best parameters found:\n', clfNbrN3.best_params_)
+    #print('Best parameters found:\n', clfNbrN1.best_params_)
+    #print('Best parameters found:\n', clfNbrN2.best_params_)
+    #print('Best parameters found:\n', clfNbrN3.best_params_)
     
     # All results
     means1 = -clfNbrN1.cv_results_['mean_test_score']
@@ -278,17 +249,17 @@ def mlp_nbr_layers(X_n,y,col):
         'hidden_layer_sizes': NumberLayers3,
     }
     
-    clfNbrL1 = GridSearchCV(mlp, parameter_space1, cv=5, scoring = tools.score_function_neg)
-    clfNbrL2 = GridSearchCV(mlp, parameter_space2, cv=5, scoring = tools.score_function_neg)
-    clfNbrL3 = GridSearchCV(mlp, parameter_space3, cv=5, scoring = tools.score_function_neg)
+    clfNbrL1 = GridSearchCV(mlp, parameter_space1, cv=5, scoring = score_function_neg)
+    clfNbrL2 = GridSearchCV(mlp, parameter_space2, cv=5, scoring = score_function_neg)
+    clfNbrL3 = GridSearchCV(mlp, parameter_space3, cv=5, scoring = score_function_neg)
     clfNbrL1.fit(X_n, y)
     clfNbrL2.fit(X_n, y)
     clfNbrL3.fit(X_n, y)
     
     # Best paramete set
-    print('Best parameters found:\n', clfNbrL1.best_params_)
-    print('Best parameters found:\n', clfNbrL2.best_params_)
-    print('Best parameters found:\n', clfNbrL3.best_params_)
+    #print('Best parameters found:\n', clfNbrL1.best_params_)
+    #print('Best parameters found:\n', clfNbrL2.best_params_)
+    #print('Best parameters found:\n', clfNbrL3.best_params_)
     
     # All results
     means1 = -clfNbrL1.cv_results_['mean_test_score']
@@ -331,10 +302,9 @@ def mlp_fun(Xtrain, Ytrain, solver, activation, n_neur_min, n_neur_max, n_layer_
         'solver':solver,
         'activation' : activation
     }
-    clf = GridSearchCV(mlp, parameter_space, cv=5, scoring=tools.score_function_neg)
+    clf = GridSearchCV(mlp, parameter_space, cv=5, scoring=score_function_neg)
     clf.fit(Xtrain, Ytrain)
-    # Best paramete set
-    print('Best parameters found:\n', clf.best_params_)
+    #print('Best parameters found:\n', clf.best_params_)
     
     means = clf.cv_results_['mean_test_score']
     stds = clf.cv_results_['std_test_score']
@@ -344,4 +314,3 @@ def mlp_fun(Xtrain, Ytrain, solver, activation, n_neur_min, n_neur_max, n_layer_
         result.append((-mean, std, params))
     return result
     
->>>>>>> c7a4c5e43782627d3f3fa96d5800ba3b40be2035
