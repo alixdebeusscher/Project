@@ -24,3 +24,16 @@ methods.data_analysis(X,X_n,y,col)
 methods.linear(X_n,y,col)
 
 methods.kNN(X,y,col)
+
+methods.mlp_solver_activation(X_n,y,col)
+
+solver = ['lbfgs']
+activation = ['tanh','relu']
+n_neur_min = 10
+n_neur_max = 20
+n_layer_min = 1
+n_layer_max = 3
+
+
+result = mlp_final(X_n, y, solver, activation, n_neur_min, n_neur_max,n_layer_min,n_layer_max)
+print(result)

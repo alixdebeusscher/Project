@@ -17,6 +17,8 @@ from sklearn.metrics import mean_squared_error
 from sklearn import neighbors
 from sklearn.model_selection import cross_val_score
 import itertools as it
+from sklearn.model_selection import GridSearchCV
+from sklearn.neural_network import MLPRegressor
 
 def data_analysis(X,X_n,y,col):
     #PLot the target VS each features (normalized)
@@ -162,3 +164,176 @@ def kNN(X,y,col):
     print('features = ',features)
     model = estimator(n_neighbors=k)
     tools.plot_learning_curve(model, 'Test', X[:,features], y, cv=10)
+    
+def mlp_solver_activation(X_n,y,col):
+    mlp = MLPRegressor(max_iter=2000) 
+    parameter_space = {
+        'solver': ['sgd', 'adam', 'lbfgs'],
+        'activation' : ['identity', 'logistic', 'tanh', 'relu']
+    }
+    
+    # do stuff
+    clf = GridSearchCV(mlp, parameter_space, cv=5, scoring = tools.score_function_neg)
+    clf.fit(X_n, y)
+
+    # Best paramete set
+    print('Best parameters found:\n', clf.best_params_)
+    
+    # All results
+    means = clf.cv_results_['mean_test_score']
+    stds = clf.cv_results_['std_test_score']
+    for mean, std, params in zip(means, stds, clf.cv_results_['params']):
+        print("%0.3f (+/-%0.03f) for %r" % (mean, std * 2, params))
+        
+def mlp_nbr_neurons(X_n,y,col):
+    mlp = MLPRegressor(max_iter=2000,solver='lbfgs',activation='relu')
+
+    train_sizes = range(1,31)
+    NumberNeurons1 = []
+    NumberNeurons2 = []
+    NumberNeurons3 = []
+    for i in train_sizes:
+        NumberNeurons1.append((i,))
+        NumberNeurons2.append((i,)*3)
+        NumberNeurons3.append((i,)*5)
+        
+    parameter_space1 = {
+        'hidden_layer_sizes': NumberNeurons1,
+    }
+    parameter_space2 = {
+        'hidden_layer_sizes': NumberNeurons2,
+    }
+    parameter_space3 = {
+        'hidden_layer_sizes': NumberNeurons3,
+    }
+    
+    clfNbrN1 = GridSearchCV(mlp, parameter_space1, cv=5, scoring = tools.score_function_neg)
+    clfNbrN2 = GridSearchCV(mlp, parameter_space2, cv=5, scoring = tools.score_function_neg)
+    clfNbrN3 = GridSearchCV(mlp, parameter_space3, cv=5, scoring = tools.score_function_neg)
+    clfNbrN1.fit(X_n, y)
+    clfNbrN2.fit(X_n, y)
+    clfNbrN3.fit(X_n, y)   
+    
+    # Best paramete set
+    print('Best parameters found:\n', clfNbrN1.best_params_)
+    print('Best parameters found:\n', clfNbrN2.best_params_)
+    print('Best parameters found:\n', clfNbrN3.best_params_)
+    
+    # All results
+    means1 = -clfNbrN1.cv_results_['mean_test_score']
+    stds1 = -clfNbrN1.cv_results_['std_test_score']
+    means2 = -clfNbrN2.cv_results_['mean_test_score']
+    stds2 = -clfNbrN2.cv_results_['std_test_score']
+    means3 = -clfNbrN3.cv_results_['mean_test_score']
+    stds3 = -clfNbrN3.cv_results_['std_test_score']
+    
+    # PLot
+    plt.figure()
+    plt.xlabel("Number of neurones")
+    plt.ylabel("RMSE")
+    plt.grid()
+    plt.fill_between(train_sizes, means1 - stds1,
+                     means1 + stds1, alpha=0.1,
+                     color="r")
+    plt.fill_between(train_sizes, means2 - stds2,
+                     means2 + stds2, alpha=0.1, color="g")
+    plt.fill_between(train_sizes, means3 - stds3,
+                     means1 + stds3, alpha=0.1,
+                     color="b")
+    plt.plot(train_sizes, means1, color="r",
+             label="One layer")
+    plt.plot(train_sizes, means2, color="g",
+             label="Three layers")
+    plt.plot(train_sizes, means3, color="b",
+             label="Five layers")
+    plt.legend(loc="best")
+    plt.savefig('NbrNeurones.png')
+         
+def mlp_nbr_layers(X_n,y,col):
+    mlp = MLPRegressor(max_iter=2000,solver='lbfgs',activation='relu')
+    
+    NumberLayers1 = []
+    NumberLayers2 = []
+    NumberLayers3 = []
+    train_sizes = range(1,11)
+    for i in train_sizes:
+        NumberLayers1.append((5,)*i)
+        NumberLayers2.append((15,)*i)
+        NumberLayers3.append((30,)*i)
+        
+    parameter_space1 = {
+        'hidden_layer_sizes': NumberLayers1,
+    }
+    parameter_space2 = {
+        'hidden_layer_sizes': NumberLayers2,
+    }
+    parameter_space3 = {
+        'hidden_layer_sizes': NumberLayers3,
+    }
+    
+    clfNbrL1 = GridSearchCV(mlp, parameter_space1, cv=5, scoring = tools.score_function_neg)
+    clfNbrL2 = GridSearchCV(mlp, parameter_space2, cv=5, scoring = tools.score_function_neg)
+    clfNbrL3 = GridSearchCV(mlp, parameter_space3, cv=5, scoring = tools.score_function_neg)
+    clfNbrL1.fit(X_n, y)
+    clfNbrL2.fit(X_n, y)
+    clfNbrL3.fit(X_n, y)
+    
+    # Best paramete set
+    print('Best parameters found:\n', clfNbrL1.best_params_)
+    print('Best parameters found:\n', clfNbrL2.best_params_)
+    print('Best parameters found:\n', clfNbrL3.best_params_)
+    
+    # All results
+    means1 = -clfNbrL1.cv_results_['mean_test_score']
+    stds1 = -clfNbrL1.cv_results_['std_test_score']
+    means2 = -clfNbrL2.cv_results_['mean_test_score']
+    stds2 = -clfNbrL2.cv_results_['std_test_score']
+    means3 = -clfNbrL3.cv_results_['mean_test_score']
+    stds3 = -clfNbrL3.cv_results_['std_test_score']
+    
+    # PLot
+    plt.figure()
+    plt.xlabel("Number of layers")
+    plt.ylabel("RMSE")
+    plt.grid()
+    plt.fill_between(train_sizes, means1 - stds1,
+                     means1 + stds1, alpha=0.1,
+                     color="r")
+    plt.fill_between(train_sizes, means2 - stds2,
+                     means2 + stds2, alpha=0.1, color="g")
+    plt.fill_between(train_sizes, means3 - stds3,
+                     means1 + stds3, alpha=0.1,
+                     color="b")
+    plt.plot(train_sizes, means1, color="r",
+             label="Five neurones")
+    plt.plot(train_sizes, means2, color="g",
+             label="Fifteen neurones")
+    plt.plot(train_sizes, means3, color="b",
+             label="Thirty neurones")
+    plt.legend(loc="best")
+    plt.savefig('NbrLayers.png')
+    
+def mlp_fun(Xtrain, Ytrain, solver, activation, n_neur_min, n_neur_max, n_layer_min, n_layer_max):
+    mlp = MLPRegressor(max_iter=5000)
+    neur=[]
+    for i in range(n_neur_min,n_neur_max+1):
+        for j in range(n_layer_min, n_layer_max+1):
+            neur.append((i,)*j)
+    parameter_space = {
+        'hidden_layer_sizes': neur,
+        'solver':solver,
+        'activation' : activation
+    }
+    clf = GridSearchCV(mlp, parameter_space, cv=5, scoring=tools.score_function_neg)
+    clf.fit(Xtrain, Ytrain)
+    # Best paramete set
+    print('Best parameters found:\n', clf.best_params_)
+    
+    means = clf.cv_results_['mean_test_score']
+    stds = clf.cv_results_['std_test_score']
+    result = []
+    for mean, std, params in zip(means, stds, clf.cv_results_['params']):
+        #print("%0.3f (+/-%0.03f) for %r" % (mean, std * 2, params))
+        result.append((-mean, std, params))
+    return result
+    
