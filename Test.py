@@ -1,4 +1,4 @@
-from tools import *
+from tools
 import pandas as pd
 import matplotlib.pyplot as plt 
 from sklearn import neighbors
@@ -17,17 +17,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import cross_val_score
 import itertools as it
 
-X1=pd.read_csv("X1_t1.csv")
 
-#column name
-col = list(X1)
-
-#Load the data
-X = X1.drop(col[-1],axis=1).values
-y = X1[col[-1]].values
-col = col[:-1]
-#Normalized input
-X_n = normalize(X)
 
 def linear(X,y):
     regressor = LinearRegression()
@@ -37,7 +27,7 @@ def linear(X,y):
     
     width = 1/1.5
     plt.figure(figsize=(10,3))
-    plt.bar(col, regressor.coef_, width, color="green")
+    plt.bar(col[:-1], regressor.coef_, width, color="green")
     plt.savefig('coef.png')
     
     plot_learning_curve(LinearRegression(), '', X, y, cv=5)
@@ -78,19 +68,29 @@ def get_k(X_train,X_test,y_train,y_test,max_k):
     return k,p
 
 
-linear(X,y)
-linear(X_n,y)
+#split data
+#X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.33, shuffle=False)
+#rmse, k = get_k(X_train,X_test,y_train,y_test,100)
+#print('Least rmse is:', rmse, 'with k:', k)
+#print(X_train[4])
+##normalize data
+#x_train = normalize(X_train)
+#x_test = normalize(X_test)
+#print(x_train[4])
+#rmse, k = get_k(x_train,x_test,y_train,y_test,100)
+#print('Least rmse is:', rmse, 'with k:', k)
 
-    
-
-#%%
+#linear(X,y)
+#X_scaled = normalize(X)
+#linear(X_scaled,y)
+#split data
 X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.33, shuffle=False)
 rmse, k = get_k(X_train,X_test,y_train,y_test,100)
 print('Least rmse is:', rmse, 'with k:', k)
 
 #normalize data
-x_train = tools.normalize(X_train)
-x_test = tools.normalize(X_test)
+x_train = normalize(X_train)
+x_test = normalize(X_test)
 rmse, k = get_k(x_train,x_test,y_train,y_test,100)
 print('Least rmse is:', rmse, 'with k:', k)
 

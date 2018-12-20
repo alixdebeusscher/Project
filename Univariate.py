@@ -36,55 +36,55 @@ plt.subplots_adjust(top=0.92, bottom=0.08, left=0.10, right=0.95, hspace=0.40,
                 wspace=0.1)
 plt.savefig('scatterFeatures.png')
 
-##estimation of mutual information
-#def distribution(X):
-#    dim = X.ndim
-#    size = X.shape
-#    count = {}
-#    if dim == 1:
-#        for i in range(size[0]):
-#            entry = X[i]
-#            if entry not in count:
-#                count[entry] = 0
-#            count[entry] += 1
-#    else:           
-#        for i in range(size[0]):
-#            entry = tuple(X[i,:])
-#            if entry not in count:
-#                count[entry] = 0
-#            count[entry] += 1
-#    return {k:v/size[0] for (k,v) in count.items()}
-#
-#def entropy(distr):
-#    p = np.array([v for v in distr.values()])
-#    return - (p * np.log2(p)).sum()
-#
-#def concat(X1,X2):
-#    return np.concatenate(([X1],[X2]),axis=0).T
-#
-## and display + cluster on a heatmap
-#nf = 8
-#corr = np.zeros((nf,nf))
-#
-#for i in range(nf):
-#    for j in range(nf):
-#        d12 = distribution(concat(X[:,i],X[:,j]))
-#        d1  = distribution(X[:,i])
-#        d2  = distribution(X[:,j])
-#        E   = entropy(d1) + entropy(d2)
-#        corr[i,j] = (E - entropy(d12)) / entropy(d12)
-#        
-#sns.clustermap(corr, annot=True, xticklabels = colom, yticklabels = colom);
-#plt.savefig('mutualInformation.png')
-#
-#corry = np.zeros(nf)
-#for i in range(nf):
-#    d12 = distribution(concat(X[:,i],y))
-#    d1  = distribution(X[:,i])
-#    d2  = distribution(y)
-#    E   = entropy(d1) + entropy(d2)
-#    corry[i] = (E - entropy(d12)) / entropy(d12)
-#
+#estimation of mutual information
+def distribution(X):
+    dim = X.ndim
+    size = X.shape
+    count = {}
+    if dim == 1:
+        for i in range(size[0]):
+            entry = X[i]
+            if entry not in count:
+                count[entry] = 0
+            count[entry] += 1
+    else:           
+        for i in range(size[0]):
+            entry = tuple(X[i,:])
+            if entry not in count:
+                count[entry] = 0
+            count[entry] += 1
+    return {k:v/size[0] for (k,v) in count.items()}
+
+def entropy(distr):
+    p = np.array([v for v in distr.values()])
+    return - (p * np.log2(p)).sum()
+
+def concat(X1,X2):
+    return np.concatenate(([X1],[X2]),axis=0).T
+
+# and display + cluster on a heatmap
+nf = 8
+corr = np.zeros((nf,nf))
+
+for i in range(nf):
+    for j in range(nf):
+        d12 = distribution(concat(X[:,i],X[:,j]))
+        d1  = distribution(X[:,i])
+        d2  = distribution(X[:,j])
+        E   = entropy(d1) + entropy(d2)
+        corr[i,j] = (E - entropy(d12)) / entropy(d12)
+        
+sns.clustermap(corr, annot=True, xticklabels = colom, yticklabels = colom);
+plt.savefig('mutualInformation.png')
+
+corry = np.zeros(nf)
+for i in range(nf):
+    d12 = distribution(concat(X[:,i],y))
+    d1  = distribution(X[:,i])
+    d2  = distribution(y)
+    E   = entropy(d1) + entropy(d2)
+    corry[i] = (E - entropy(d12)) / entropy(d12)
+
 #width = 1/1.5
 #plt.subplots(1)
 #plt.figure(figsize=(10,5))
@@ -92,9 +92,9 @@ plt.savefig('scatterFeatures.png')
 #plt.bar(colom, corry, width, color="green")
 #plt.ylabel("Mutual information")
 #plt.savefig('mutualInformationTarget.png')
-#
-#for i in range(8):
-#    print("MI of %s is: %f" % (colom[i], corry[i]))
-#    
-#
-#        
+
+for i in range(8):
+    print("MI of %s is: %f" % (colom[i], corry[i]))
+    
+
+        

@@ -207,7 +207,13 @@ plt.savefig('NbrLayers.png')
 
 
 
-#%% Test
+#%% Going further in the hyper-parameters
+#Normalement c'est le big truc avec tous les paramètre généralisé (layer de 1 à 3,
+#neurons de 10 à 20,...) et sans les features (fin lire ce qui est noté dans le rapport
+#ou modifier pour que ce soit cohérent avec le code) 
+#Du coup c'est refaire pareil que au-dessus en changeant le parameter_space
+#Après avoir fait le truc avec tous les hyperparameters (sans alpha et l'autre)
+#C'est le test avec les features et éventuellement différent hyper parameters
 mlpFeatures = MLPRegressor(max_iter=2000)
 parameter_space = {
         'hidden_layer_sizes': [(12,),(13,),(14,)],
@@ -215,8 +221,7 @@ parameter_space = {
         'activation' : ['tanh'],
     }
 
- 
- 
+#Apply the greedy algorithm to select the best features
 clfFeatures = GridSearchCV(mlpFeatures, parameter_space, cv=5, scoring = score_function_neg)
 X_best = X_n
 nbrFeatures = 7
@@ -254,12 +259,8 @@ print(minRMS)
 print(BestParams)
 print(newCol)
 
-#%%
+#%% Plot of the learning curve for our best model
 model = MLPRegressor(max_iter=2000,activation = 'tanh', 
                      hidden_layer_sizes = (13,),solver = 'lbfgs')
 plot_learning_curve(model, '', X_n, y, cv=5)
 plt.savefig('FinalMLP.png')
-#%% 
-score = cross_val_score(model,X_n,y, cv=5, scoring=score_function)
-print(score.mean())
-print(score.std())
