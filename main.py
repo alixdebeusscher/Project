@@ -1,5 +1,4 @@
-import tools 
-import methods
+from methods import *
 
 #read file
 X1=pd.read_csv("X1_t1.csv")
@@ -15,12 +14,12 @@ y = X1[col[-1]].values
 col = col[:-1]
 
 #Normalized input
-X_n = tools.normalize(X)
+X_n = normalize(X)
 
 #Do the plot for the data analysis + MI
 methods.data_analysis(X,X_n,y,col)
 
 #Plot for the linear model + coef
-methods.linear(X_n,y,col)
+linear(X_n,y,col)
 
-methods.kNN(X,y,col)
+kNN(X,y,col)

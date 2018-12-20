@@ -1,22 +1,4 @@
-import tools
-
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt 
-import scipy.io
-import scipy.stats as stats
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn import preprocessing
-import seaborn as sns
-import plotly.plotly as py
-import plotly.tools as tls
-from sklearn.preprocessing import MinMaxScaler
-from math import sqrt
-from sklearn.metrics import mean_squared_error 
-from sklearn import neighbors
-from sklearn.model_selection import cross_val_score
-import itertools as it
+from tools import *
 
 def data_analysis(X,X_n,y,col):
     #PLot the target VS each features (normalized)
@@ -90,8 +72,8 @@ def linear(X,y,col):
     plt.figure(figsize=(10,3))
     plt.bar(col, regressor.coef_, width, color="green")
     plt.savefig('coef.png')
-    
-    tools.plot_learning_curve(regressor, '', X, y, cv=5)
+   # tools.
+    plot_learning_curve(regressor, '', X, y, cv=5)
     plt.savefig('lr.png')
     
     
@@ -127,8 +109,8 @@ def kNN(X,y,col):
     rmse, k = get_k(X_train,X_test,y_train,y_test,100)
     print('Least rmse is:', rmse, 'with k:', k)
     #normalize data
-    x_train = tools.normalize(X_train)
-    x_test = tools.normalize(X_test)
+    x_train = normalize(X_train)
+    x_test = normalize(X_test)
     rmse, k = get_k(x_train,x_test,y_train,y_test,100)
     print('Least rmse is:', rmse, 'with k:', k)
     
@@ -144,7 +126,7 @@ def kNN(X,y,col):
             for n_features in range(1,size[1]+1):
                 for features in it.combinations(list(range(size[1])), n_features):
                     subdata = X[:,features]
-                    scores = cross_val_score(model,subdata,y, cv=10, scoring=tools.score_function)
+                    scores = cross_val_score(model,subdata,y, cv=10, scoring=score_function)
                     if scores.mean() < minscore:
                         minscore = scores.mean()
                         FinalScores = scores
@@ -161,4 +143,4 @@ def kNN(X,y,col):
     print('k = ',k)
     print('features = ',features)
     model = estimator(n_neighbors=k)
-    tools.plot_learning_curve(model, 'Test', X[:,features], y, cv=10)
+    plot_learning_curve(model, 'Test', X[:,features], y, cv=10)

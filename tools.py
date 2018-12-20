@@ -1,11 +1,24 @@
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.naive_bayes import GaussianNB
-from sklearn.svm import SVC
-from sklearn.datasets import load_digits
-from sklearn.model_selection import learning_curve
-from sklearn.model_selection import ShuffleSplit
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.model_selection import train_test_split
+from sklearn.neural_network import MLPRegressor
+from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import learning_curve
+from sklearn.model_selection import GridSearchCV
+#from sklearn.feature_selection import RFECV
+#import scipy.io
+#import scipy.stats as stats
+from sklearn.linear_model import LinearRegression
+from sklearn import preprocessing
+#import seaborn as sns
+#import plotly.plotly as py
+#import plotly.tools as tls
+from math import sqrt
+from sklearn import neighbors
+from sklearn.model_selection import cross_val_score
+import itertools as it
 
 def normalize(X_train):
     scaler = MinMaxScaler()
