@@ -33,7 +33,12 @@ n_neur_min = 10
 n_neur_max = 20
 n_layer_min = 1
 n_layer_max = 3
+methods.mlp_final(X_n, y, solver, activation, n_neur_min, n_neur_max,n_layer_min,n_layer_max)
 
-
-result = mlp_final(X_n, y, solver, activation, n_neur_min, n_neur_max,n_layer_min,n_layer_max)
-print(result)
+solver = ['lbfgs']
+activation = ['tanh','relu']
+n_neur_min = 12
+n_neur_max = 14
+n_layer_min = 1
+n_layer_max = 1
+methods.mlp_select_features(X_n,y,col,solver, activation, n_neur_min, n_neur_max, n_layer_min, n_layer_max)

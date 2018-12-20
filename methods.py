@@ -313,27 +313,78 @@ def mlp_nbr_layers(X_n,y,col):
     plt.legend(loc="best")
     plt.savefig('NbrLayers.png')
     
-def mlp_fun(Xtrain, Ytrain, solver, activation, n_neur_min, n_neur_max, n_layer_min, n_layer_max):
+def mlp_final(X_n, y, solver, activation, n_neur_min, n_neur_max, n_layer_min, n_layer_max):
     mlp = MLPRegressor(max_iter=5000)
-    neur=[]
+    
+    StructNetwork = []
     for i in range(n_neur_min,n_neur_max+1):
-        for j in range(n_layer_min, n_layer_max+1):
-            neur.append((i,)*j)
+        for j in range(n_layer_min,n_layer_max+1):
+            StructNetwork.append((i,)*j)
+        
     parameter_space = {
-        'hidden_layer_sizes': neur,
+        'hidden_layer_sizes': StructNetwork,
         'solver':solver,
         'activation' : activation
     }
-    clf = GridSearchCV(mlp, parameter_space, cv=5, scoring=tools.score_function_neg)
-    clf.fit(Xtrain, Ytrain)
+    
+    clfNbrF = GridSearchCV(mlp, parameter_space, cv=5, scoring = tools.score_function_neg)
+    clfNbrF.fit(X_n, y)
+    
     # Best paramete set
-    print('Best parameters found:\n', clf.best_params_)
+    print('Best parameters found:\n', clfNbrF.best_params_)
     
-    means = clf.cv_results_['mean_test_score']
-    stds = clf.cv_results_['std_test_score']
-    result = []
-    for mean, std, params in zip(means, stds, clf.cv_results_['params']):
-        #print("%0.3f (+/-%0.03f) for %r" % (mean, std * 2, params))
-        result.append((-mean, std, params))
-    return result
+    # PLot
+    model = MLPRegressor(max_iter=2000,activation = 'tanh', 
+                     hidden_layer_sizes = (13,),solver = 'lbfgs')
+    tools.plot_learning_curve(model, '', X_n, y, cv=5)
+    plt.savefig('FinalMLP.png')
+
+def mlp_select_features(X_n,y,col,solver, activation, n_neur_min, n_neur_max, n_layer_min, n_layer_max)):
+    mlpFeatures = MLPRegressor(max_iter=5000)
     
+    StructNetwork = []
+    for i in range(n_neur_min,n_neur_max+1):
+        for j in range(n_layer_min,n_layer_max+1):
+            StructNetwork.append((i,)*j)
+        
+    parameter_space = {
+        'hidden_layer_sizes': StructNetwork,
+        'solver':solver,
+        'activation' : activation
+    }
+    
+    #Apply the greedy algorithm to select the best features
+    clfFeatures = GridSearchCV(mlpFeatures, parameter_space, cv=5, scoring = tools.score_function_neg)
+    X_best = X_n
+    nbrFeatures = 7
+    toRemove = None
+    BestParams = None
+    NotBest = True 
+    newCol = col
+    clfFeatures.fit(X_n, y)
+    minRMS = -clfFeatures.best_score_
+    print(minRMS)
+    print(clfFeatures.best_params_)
+    while (NotBest):
+        for i in range(1,nbrFeatures):
+            X_try = np.delete(X_best,i,1)
+            clfFeatures.fit(X_try, y)
+            print(-clfFeatures.best_score_)
+            if -clfFeatures.best_score_ <= minRMS:
+                minRMS = -clfFeatures.best_score_
+                toRemove = i
+                print(toRemove)
+                BestParams = clfFeatures.best_params_
+                print(BestParams)
+        if toRemove == None:
+            NotBest = False
+        else:
+            newCol = np.delete(newCol,toRemove,0)
+            X_best = np.delete(X_best,toRemove,1)
+            nbrFeatures -= 1
+            toRemove = None      
+    
+    print('FINAL SOLUTION')
+    print(minRMS)
+    print(BestParams)
+    print(newCol)
